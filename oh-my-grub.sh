@@ -3,6 +3,27 @@
 GRUB_NAME=""
 CURRENT_GRUB_THEME=""
 DOWNLOADED_THEMES=("")
+AVAILABLE_THEMES=("Atomic")
+
+function omg-compile-grub {
+  ${GRUB_NAME}-mkconfig -o /boot/${GRUB_NAME}/grub.cfg
+}
+
+function omg-modify-grub-theme-path {
+  echo "Modifying GRUB_THEME line in /etc/default/grub file"
+}
+
+function omg-download-theme {
+  local url=$1
+  local themename=$2
+  git clone $url /tmp/$themename
+  cp -rf /tmp/$themename /boot/${GRUB_NAME}/themes
+}
+
+function omg-backup-grub {
+  cp -rf /boot/grub /boot/grub-backup-$(date '+%m-%d-%y_%H:%M:%S')
+}
+
 
 function omg-help {
   cat << EOF
@@ -21,6 +42,7 @@ function omg-init {
   echo "$GRUB_NAME"
   echo "$CURRENT_GRUB_THEME"
   echo "${DOWNLOADED_THEMES[@]}"
+  echo "${AVAILABLE_THEMES[@]}"
 }
 
 function omg-check-downloaded-themes {
