@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+GRUB_NAME=""
+
 function omg-help() {
   cat << EOF
 $ omg update all            # Update all themes
@@ -14,9 +16,29 @@ EOF
 
 function omg-init() {
   echo "Init stuff"
+  echo "$GRUB_NAME"
 }
 
+function omg-check-grub {
+  # Check which grub using
+  if [ -d "/boot/grub" ];then
+    GRUB_NAME="grub"
+  else
+    GRUB_NAME="grub2"
+  fi
+}
+function omg-check-privilege {
+  # Check user is root
+  if [ $UID == 0 ];then
+    echo "Yes, You have privilege"
+  else
+    echo "No, You must be root!"
+    exit 1
+  fi
+}
 function omg-main() {
+  omg-check-privilege
+  omg-check-grub
   local Status=$1
   [ -z "$Status" ] && omg-init
   [ "$Status" = "help" ] || [ "$Status" = "--help" ] || [ "$Status" = "-h" ] && omg-help
