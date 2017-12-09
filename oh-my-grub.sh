@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 GRUB_NAME=""
+CURRENT_GRUB_THEME=""
 
-function omg-help() {
+function omg-help {
   cat << EOF
 $ omg update all            # Update all themes
 $ omg update <theme-name>   # Update specific theme
@@ -14,9 +15,20 @@ $ omg theme <theme-name>    # Set grub theme
 EOF
 }
 
-function omg-init() {
+function omg-init {
   echo "Init stuff"
   echo "$GRUB_NAME"
+  echo "$CURRENT_GRUB_THEME"
+}
+
+function omg-learn-current-theme {
+  # Example
+  #   GRUB_THEME=/boot/grub/themes/Atomic/theme.txt
+  #   GRUB_THEME=/boot/grub/themes/Atomic
+  #   Atomic
+  local result=$(grep GRUB_THEME < /etc/default/grub)
+  local resultClean=${result%/*}
+  CURRENT_GRUB_THEME=${resultClean##*/}
 }
 
 function omg-check-grub {
@@ -36,9 +48,10 @@ function omg-check-privilege {
     exit 1
   fi
 }
-function omg-main() {
+function omg-main {
   omg-check-privilege
   omg-check-grub
+  omg-learn-current-theme
   local Status=$1
   [ -z "$Status" ] && omg-init
   [ "$Status" = "help" ] || [ "$Status" = "--help" ] || [ "$Status" = "-h" ] && omg-help
