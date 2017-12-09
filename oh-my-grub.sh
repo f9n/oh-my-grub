@@ -2,6 +2,7 @@
 
 GRUB_NAME=""
 CURRENT_GRUB_THEME=""
+DOWNLOADED_THEMES=("")
 
 function omg-help {
   cat << EOF
@@ -19,6 +20,13 @@ function omg-init {
   echo "Init stuff"
   echo "$GRUB_NAME"
   echo "$CURRENT_GRUB_THEME"
+  echo "${DOWNLOADED_THEMES[@]}"
+}
+
+function omg-check-downloaded-themes {
+  for themename in $(ls /boot/${GRUB_NAME}/themes); do
+    DOWNLOADED_THEMES=(${DOWNLOADED_THEMES[@]} "$themename")
+  done
 }
 
 function omg-learn-current-theme {
@@ -52,6 +60,7 @@ function omg-main {
   omg-check-privilege
   omg-check-grub
   omg-learn-current-theme
+  omg-check-downloaded-themes
   local Status=$1
   [ -z "$Status" ] && omg-init
   [ "$Status" = "help" ] || [ "$Status" = "--help" ] || [ "$Status" = "-h" ] && omg-help
