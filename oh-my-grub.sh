@@ -39,10 +39,10 @@ EOF
 
 function omg-init {
   echo "Init stuff"
-  echo "$GRUB_NAME"
-  echo "$CURRENT_GRUB_THEME"
-  echo "${DOWNLOADED_THEMES[@]}"
-  echo "${AVAILABLE_THEMES[@]}"
+  echo "GrubName: $GRUB_NAME"
+  echo "CurrentGrubTheme: $CURRENT_GRUB_THEME"
+  echo "DownloadedThemes: ${DOWNLOADED_THEMES[@]}"
+  echo "AvailableThemes: ${AVAILABLE_THEMES[@]}"
 }
 
 function omg-check-downloaded-themes {
@@ -84,9 +84,31 @@ function omg-main {
   omg-learn-current-theme
   omg-check-downloaded-themes
   local Status=$1
-  [ -z "$Status" ] && omg-init
-  [ "$Status" = "help" ] || [ "$Status" = "--help" ] || [ "$Status" = "-h" ] && omg-help
-
+  local ThemeName=$2
+  case "$Status" in
+    help | --help | -h )
+      omg-help
+    ;;
+    set-theme )
+      omg-set-theme "$ThemeName"
+    ;;
+    themes )
+      omg-themes
+    ;;
+    update | --update | -u )
+      if [ -z "$ThemeName" ]; then
+        omg-update-themes
+      else
+        omg-update-theme "$ThemeName"
+      fi
+    ;;
+    install | --install | -i )
+      omg-install-theme "$ThemeName"
+    ;;
+    * )
+      omg-init
+    ;;
+  esac
 }
 
 omg-main "$@"
